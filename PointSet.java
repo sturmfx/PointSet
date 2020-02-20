@@ -1,5 +1,5 @@
 package oo.hide;
-import java.awt.*;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -20,13 +20,20 @@ public class PointSet
 
     public void add(Point point)
     {
-        if(point_number < points.length)
+        if(!(point_number < points.length))
         {
-            if(!this.contains(point))
+            Point[] temp = new Point[points.length * 2];
+            for(int i = 0; i < point_number; i++)
             {
-                points[point_number] = (Point) point.clone();
-                point_number++;
+                temp[i] = points[i];
             }
+            points = temp;
+        }
+
+        if(!this.contains(point))
+        {
+            points[point_number] = point;
+            point_number++;
         }
     }
 
@@ -89,23 +96,44 @@ public class PointSet
             sb.append('(');
             sb.append(points[i].getX());
             sb.append(',');
+            sb.append(' ');
             sb.append(points[i].getY());
             sb.append(')');
             if(i < point_number - 1)
             {
                 sb.append(',');
+                sb.append(' ');
             }
         }
         return sb.toString();
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object obj)
     {
-        if (this == o) return true;
-        if (!(o instanceof PointSet)) return false;
-        PointSet pointSet = (PointSet) o;
-        return point_number == pointSet.point_number &&
-                Arrays.equals(points, pointSet.points);
+        if (!(obj instanceof PointSet))
+        {
+            return false;
+        }
+
+        PointSet other = (PointSet) obj;
+       boolean result = true;
+
+       for(int i = 0; i < point_number; i++)
+       {
+           if(!other.contains(points[i]))
+           {
+               result = result && false;
+           }
+       }
+       return result;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = Objects.hash(point_number);
+        result = 31 * result + Arrays.hashCode(points);
+        return result;
     }
 }
